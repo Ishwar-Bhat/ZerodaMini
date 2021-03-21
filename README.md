@@ -1,0 +1,2 @@
+# ZerodaMini
+ Zeroda assessment project
