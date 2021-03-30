@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'http://127.0.0.1:8000',
-    'https://codingloop.in'
+    'codingloop.in'
 ]
 
 
