@@ -19,7 +19,7 @@ Assessment project
 * nginx: `sudo systemctl start nginx`
 * redis: `sudo systemctl start redis`
 * server: `sudo nohup python3 manage.py runserver &`
-* celery: `celery -A zerodamini -b redis://localhost:6379/0 --result-backend redis://localhost:6379/1 worker --loglevel=INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
+* celery: `nohup celery -A zerodamini -b redis://localhost:6379/0 --result-backend redis://localhost:6379/1 worker --loglevel=INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler &`
 
 ### Making changes
 * Any new API's to be present in `apis` app in django
