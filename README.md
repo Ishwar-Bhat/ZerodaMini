@@ -15,6 +15,12 @@ Assessment project
 * Install redis and start the redis server
 * Run the Django server with any preferred method (gunicorn / manage.py)
 
+### Starting services (centos 8)
+* nginx: `sudo systemctl start nginx`
+* redis: `sudo systemctl start redis`
+* server: `sudo nohup python3 manage.py runserver &`
+* celery: `celery -A zerodamini -b redis://localhost:6379/0 --result-backend redis://localhost:6379/1 worker --loglevel=INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler`
+
 ### Making changes
 * Any new API's to be present in `apis` app in django
 * In order to build the vue code run `npm run build`, there is a file included in vue code `post_build.py` which will 
