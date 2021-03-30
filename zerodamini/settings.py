@@ -132,6 +132,7 @@ STATIC_ROOT = '/opt/codingloop/static/'
 
 CELERY_BROKER_URL = 'redis://localhost:6379'
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_IMPORTS = ("tasks", )
 CELERY_BEAT_SCHEDULE = {
     'download_and_update_redis': {
          'task': 'tasks.update_results.download_and_refresh',
