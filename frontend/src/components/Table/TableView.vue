@@ -1,6 +1,7 @@
 <template>
     <div className="ctbl-layout">
-        <TableTitle title="Search results" @searchName="sk => handleSearch(sk)" @exportCsv="exportFile"/>
+        <TableTitle title="Equity search utility" @searchName="sk => handleSearch(sk)" @exportCsv="exportFile"
+            @refreshList="sk => callSearchAPI(sk)"/>
         <TableContent :dataRows="dataRows" :linesPerPage="linesPerPage" :currentPage="currentPage"/>
         <TableFooter :totalrows="totalRows" @pageChanged="handlePageChange" @perPageChanged="handlePerPageChange"/>
     </div>
@@ -10,6 +11,7 @@
 import TableTitle from './TableTitle.vue'
 import TableContent from './TableContent.vue'
 import TableFooter from './TableFooter.vue'
+import { ApiCalls } from './../utils/utilities.js'
 
 export default {
     name: 'TableView',
@@ -28,16 +30,14 @@ export default {
         handleSearch(searchKey) {
             this.callSearchAPI(searchKey);
         },
-        async callSearchAPI(searchKey) {
-            const res= await fetch(`http://127.0.0.1:8000/api/search?q=${searchKey.toLowerCase()}`)
-            if (res.status === 200) {
-                const data = await res.json();
-                this.dataRows = data;
-            } else {
-                this.dataRows = [];
-            }
+        updateDataRows(data) {
+            this.dataRows = data;
+        },
+        callSearchAPI(searchKey) {
+            ApiCalls(`api/search?q=${searchKey.toLowerCase()}`, this.updateDataRows);
         },
         exportFile() {
+            if (this.dataRows.length === 0) return;
             let csvContent = "data:text/csv;charset=utf-8,";
             csvContent += [
                 Object.keys(this.dataRows[0]).join(","),

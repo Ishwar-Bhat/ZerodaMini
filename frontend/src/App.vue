@@ -49,7 +49,7 @@ body {
 .ctbl-layout .tbl-title .row {
 	height: 40px;
 }
-.ctbl-layout .tbl-title .row h2{
+.ctbl-layout .tbl-title .row div{
 	display: inline-block;
 }
 .ctbl-layout .tbl-title .row .right-align{

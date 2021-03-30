@@ -1,6 +1,11 @@
+from datetime import datetime
+from urllib.request import Request, urlopen
+
 import redis
+from urllib.error import HTTPError
 
 from utils.constants import RESULT_HEADERS, HASH_NAME, SEARCH_FIELD
+from utils.exceptions import ErrorDownloadingFile
 from utils.redis_client import get_redis_client
 
 
@@ -86,3 +91,55 @@ def get_results(search_key: str) -> list:
         final_result.append(convert_byte_dict_to_str_dict(details))
 
     return final_result
+
+
+def download_file(download_link: str, file_name: str, file_path: str) -> bool:
+    """
+    Download the file to specified path
+    Args:
+        download_link: Portal download link
+        file_name: name of the downloaded file
+        file_path: path in which file to be stored
+
+    Returns:
+        True if file download is successfull
+
+    Raises:
+        ErrorDownloadingFile
+    """
+    # Set headers and create request
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                             "(KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"}
+    request = Request(download_link, headers=headers)
+
+    # try downloading the file
+    try:
+        response = urlopen(request)
+    except HTTPError:
+        raise ErrorDownloadingFile("Unable to download the file")
+
+    # Read the response content
+    content = response.read()
+
+    # Write contents to file
+    try:
+        with open(f"{file_path}/{file_name}", "wb") as f:
+            f.write(content)
+    except Exception:
+        raise ErrorDownloadingFile("Unable to save the file")
+
+    return True
+
+
+def get_datetime_as_str(now: datetime) -> str:
+    """
+    Converts Datetime timestamp into readable string
+    Args:
+        now: Timestamp to be converted
+
+    Returns:
+        Readable timestamp
+    """
+    return f"{now.strftime('%d')} {now.strftime('%b')} {now.strftime('%Y')}" \
+           f" {now.strftime('%I')}:{now.strftime('%M')} {now.strftime('%p')}" \
+           f" {now.strftime('%Z')}"

@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
 
 # C extensions
 *.so

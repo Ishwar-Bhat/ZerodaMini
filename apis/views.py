@@ -1,8 +1,9 @@
 import redis
 from django.core.handlers.wsgi import WSGIRequest
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
-from utils.constants import HASH_NAME, SEARCH_FIELD
+from tasks.update_results import update_results
+from utils.constants import HASH_NAME, SEARCH_FIELD, LAST_DOWNLOAD
 from utils.redis_client import get_redis_client
 from utils.utilities import convert_byte_dict_to_str_dict
 
@@ -45,3 +46,51 @@ def get_results(req: WSGIRequest) -> JsonResponse:
 
     # Return JSONResponse which is list of results
     return JsonResponse(final_result, safe=False)
+
+
+def get_last_download(req):
+    """
+    Get the timestamp of last file download and result processing
+    Args:
+        req: Django request object
+
+    Returns:
+        JSON object containing last_download if found, otherwise returns HTTP 500
+    """
+    # Get Redis client
+    client = get_redis_client()  # type: redis.Redis
+
+    # Get latest timestamp
+    last_download = client.get(LAST_DOWNLOAD)
+
+    # If not found return Internal server error
+    if not last_download:
+        return HttpResponse(status=500)
+
+    # If found return the response
+    return JsonResponse({"last_download": last_download.decode()})
+
+
+def download_again(req):
+    """
+    Downloads the latest available file and updates the result sets in redis
+    Args:
+        req: Django request object
+
+    Returns:
+        JSON object containing last_download if found, otherwise returns HTTP 500
+    """
+    # Get Redis client
+    client = get_redis_client()  # type: redis.Redis
+
+    update_results()
+
+    # Get latest timestamp
+    last_download = client.get(LAST_DOWNLOAD)
+
+    # If not found return Internal server error
+    if not last_download:
+        return HttpResponse(status=500)
+
+    # If found return the response
+    return JsonResponse({"last_download": last_download.decode()})
